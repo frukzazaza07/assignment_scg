@@ -15,5 +15,3 @@ You’ll start by editing this README file to learn how to edit a file in Bitbuc
 6. In frontend run **yarn dev** backend run **yarn start:dev**
 7. If run **Docker** in frontend run "docker build -t frontend ." in backend run "docker build -t backend ." and in backend/database run "docker build -t database ."
 8. Start docker container run "docker-compose -f docker-compose.yml up" in root project
-
-**If run docker then backend can't connect database please run container backend again**

@@ -21,3 +21,4 @@ services:
       - 8080:8080 #map port
     depends_on:
       - frontend
+    restart: unless-stopped # for wait database run
