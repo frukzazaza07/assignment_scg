@@ -1,8 +1,6 @@
-import { ForbiddenException, Injectable, ServiceUnavailableException } from '@nestjs/common';
+import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { catchError, lastValueFrom, map } from 'rxjs';
-import { Client, DirectionsRequest } from '@googlemaps/google-maps-services-js';
-import fs, { createReadStream, createWriteStream } from 'fs';
 import { AxiosResponse } from 'axios';
 import { Request } from 'express';
 import { GoogleRequestLogService } from 'src/models/google-reqest-log/google-request-log.service';
@@ -14,7 +12,7 @@ export class GoogleMapService {
   ) { }
 
   async loadMap(req: Request) {
-    const url = `${process.env.GOOGLE_MAP_API_ENDPOIN}/api/js?key=${process.env.GOOGLE_MAP_API_KEY}`
+    const url = `${process.env.GOOGLE_MAP_API_ENDPOINT}/api/js?key=${process.env.GOOGLE_MAP_API_KEY}`
     const columInsertLog: any = {
       gml_user_ip: req.ip,
       gml_request_url: req.url,
@@ -45,7 +43,7 @@ export class GoogleMapService {
 
   async nearbySearch(query: string, req: Request) {
     // url call google map service
-    const url = `${process.env.GOOGLE_MAP_API_ENDPOIN}/api/place/nearbysearch/json?${query}&key=${process.env.GOOGLE_MAP_API_KEY}`
+    const url = `${process.env.GOOGLE_MAP_API_ENDPOINT}/api/place/nearbysearch/json?${query}&key=${process.env.GOOGLE_MAP_API_KEY}`
     // payload insert request google service log
     const columInsertLog: any = {
       gml_user_ip: req.ip,
@@ -78,7 +76,7 @@ export class GoogleMapService {
 
   async findPlaceFromText(query: string, req: Request) {
     // url call google map service
-    const url = `${process.env.GOOGLE_MAP_API_ENDPOIN}/api/place/findplacefromtext/json?${query}&key=${process.env.GOOGLE_MAP_API_KEY}`
+    const url = `${process.env.GOOGLE_MAP_API_ENDPOINT}/api/place/findplacefromtext/json?${query}&key=${process.env.GOOGLE_MAP_API_KEY}`
     // payload insert request google service log
     const columInsertLog: any = {
       gml_user_ip: req.ip,
@@ -113,7 +111,7 @@ export class GoogleMapService {
     // not use
     const request = this.httpService
       .post(
-        `${process.env.GOOGLE_MAP_API_ENDPOIN}/api/place/textsearch/json?${query}&key=${process.env.GOOGLE_MAP_API_KEY}`,
+        `${process.env.GOOGLE_MAP_API_ENDPOINT}/api/place/textsearch/json?${query}&key=${process.env.GOOGLE_MAP_API_KEY}`,
       )
       .pipe(map((res) => res.data))
       .pipe(
@@ -128,7 +126,7 @@ export class GoogleMapService {
 
     try {
       // url call google map service
-      const url = `${process.env.GOOGLE_MAP_API_ENDPOIN}/api/place/photo?${query}&key=${process.env.GOOGLE_MAP_API_KEY}`
+      const url = `${process.env.GOOGLE_MAP_API_ENDPOINT}/api/place/photo?${query}&key=${process.env.GOOGLE_MAP_API_KEY}`
       // payload insert request google service log
       const columInsertLog: any = {
         gml_user_ip: req.ip,
@@ -153,5 +151,26 @@ export class GoogleMapService {
       throw new ServiceUnavailableException('API not available');
     }
 
+  }
+  async googleValidateCaptcha(token: string) {
+    const payload = {
+      "event": {
+        "token": token,
+        "siteKey": process.env.GOOGLE_RECAPTCHA_API_KEY,
+      }
+    }
+    const request = this.httpService
+      .post(
+        `${process.env.GOOGLE_RECAPTCHA_API_ENDPOINT}/assessments?key=${process.env.GOOGLE_MAP_API_KEY}`,
+        payload
+      )
+      .pipe(map((res) => res.data))
+      .pipe(
+        catchError((err) => {
+          throw new ServiceUnavailableException(err?.response?.data);
+        }),
+      );
+    const res = await lastValueFrom(request);
+    return res;
   }
 }

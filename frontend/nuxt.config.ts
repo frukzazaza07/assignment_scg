@@ -14,7 +14,9 @@ export default defineNuxtConfig({
   ],
   app: {
     head: {
-      script: [{ src: `${process.env.API_URL}/api/restaurants/load-map` }]
+      script: [
+        { src: `${process.env.API_URL}/api/restaurants/load-map` },
+      ]
     }
   },
   devServer: {
@@ -23,7 +25,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       baseURL: process.env.API_URL || 'http://localhost:8000',
-      captchaKey: process.env.GOOGLE_CAPTCHA || '',
+      captchaKey: process.env.GOOGLE_RECAPTCHA_API_KEY || '',
     },
   },
   build: {

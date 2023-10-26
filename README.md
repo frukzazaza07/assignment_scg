@@ -3,6 +3,11 @@
 ## System Architecture Diagram
 ![Alt text](system_diagram/system_architecture_diagram.png)
 
+## System require
+1. operation system
+2. node version >= 20.7.0
+3. mysql
+
 ## Install and Run Project
 
 You’ll start by editing this README file to learn how to edit a file in Bitbucket.

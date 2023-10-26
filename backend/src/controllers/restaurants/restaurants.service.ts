@@ -19,7 +19,7 @@ export class RestaurantsService {
   async loadMap(req: Request) {
     return await this.services.loadMap(req);
   }
-
+  
   async findPlaceFromText(searchPlace: string, req: Request) {
     const options = {
       fields: 'formatted_address,name,rating,opening_hours,geometry',

@@ -63,6 +63,7 @@
 <script setup lang="ts">
 import Loading from '@/components/Loading.vue';
 import Dialog from '@/components/Dialog.vue';
+import { useReCaptcha } from 'vue-recaptcha-v3';
 
 const mapRef = ref(null)
 const zoom = 13
@@ -75,6 +76,7 @@ const config = useRuntimeConfig()
 const infoWindowRef: any = reactive({})
 const route = useRoute()
 const router = useRouter()
+const recaptchaInstance = useReCaptcha();
 // initMap is now async
 let map: google.maps.Map;
 let markers: google.maps.Marker[] = [];
@@ -160,8 +162,13 @@ async function getDefaultLocation() {
 
 async function findPlaces() {
     try {
+        const recaptchaToken = await getRecaptchaToken()
         router.push({ query: { searchPlace: searchPlace.value } })
-        const places: any = await useMyFetch('api/restaurants/find-places', { method: 'post', body: { searchPlace: searchPlace.value !== '' ? searchPlace.value : undefined } })
+        const places: any = await useMyFetch('api/restaurants/find-places', {
+            headers: { 'g-recaptcha-response': recaptchaToken },
+            method: 'post',
+            body: { searchPlace: searchPlace.value !== '' ? searchPlace.value : undefined }
+        })
         listPlaces.value = places.data.value.results
         deleteMarkers()
         for (const value of places.data.value.results) {
@@ -197,6 +204,16 @@ async function getPlacePhoto(item: any) {
         console.log(e)
     }
 }
+
+const getRecaptchaToken = async () => {
+    // optional you can await for the reCaptcha load
+    await recaptchaInstance?.recaptchaLoaded();
+
+    // get the token, a custom action could be added as argument to the method
+    const token = await recaptchaInstance?.executeRecaptcha();
+
+    return token;
+};
 
 onMounted(async () => {
     await initMap()
@@ -255,4 +272,5 @@ onMounted(async () => {
         background-color: #004D40;
         color: white;
     }
-}</style>
+}
+</style>

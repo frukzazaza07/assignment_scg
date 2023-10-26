@@ -11,6 +11,7 @@ import {
 import { RestaurantsService } from './restaurants.service';
 import { HttpService } from '@nestjs/axios';
 import { Request } from 'express';
+import { CaptchaGuard } from 'src/guards/captcha.guard';
 @Controller('restaurants')
 export class RestaurantsController {
   constructor(private readonly services: RestaurantsService) { }
@@ -26,6 +27,7 @@ export class RestaurantsController {
     return await this.services.loadMap(req);
   }
 
+  @UseGuards(CaptchaGuard)
   @Post('find-places')
   async findPlaces(@Body('searchPlace') searchPlace: string = 'Bang sue', @Req() req: Request) {
     // find restaurants near place
