@@ -3,7 +3,7 @@ describe('template spec', () => {
     cy.visit('http://localhost:3000')
   })
 
-  it('payload body backend passed', () => {
+  it('payload body backend without google recaptcha', () => {
     cy.request('post', 'http://localhost:8080/api/restaurants/find-places', {searchPlace: 'Bang sue'})
   })
 })

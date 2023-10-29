@@ -1,4 +1,4 @@
-import { Injectable, ServiceUnavailableException } from '@nestjs/common';
+import { BadRequestException, Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { catchError, lastValueFrom, map } from 'rxjs';
 import { AxiosResponse } from 'axios';
@@ -167,7 +167,7 @@ export class GoogleMapService {
       .pipe(map((res) => res.data))
       .pipe(
         catchError((err) => {
-          throw new ServiceUnavailableException(err?.response?.data);
+          throw new BadRequestException('Please captcha check');
         }),
       );
     const res = await lastValueFrom(request);
